@@ -1,6 +1,6 @@
 import flet as ft
 import os
-
+import time
 from camaraMain import CamaraMain 
 
 
@@ -36,22 +36,25 @@ def main(page: ft.Page):
 
 
     def change_main_camera(e):
-        
-        nueva_indice = panel_CamaraPrincipal.get_indice()
-        indice_click = e.control.get_indice()
-        print(f'registro click en camara {indice_click}, intercambiando con camara {nueva_indice}')
-        # 1. Liberar recursos de AMBAS cámaras antes de intercambiar.
-        # Esto evita que OpenCV falle por intentar abrir una cámara que ya está en uso.
-        panel_CamaraPrincipal.liberar_recursos()
-        
-        e.control.liberar_recursos()
-        
-        
-        # Usamos get_indice() para asegurar que tenemos el valor actual, no el inicial
-        
-        panel_CamaraPrincipal.setIndice(indice_click)
-        
-        e.control.setIndice(nueva_indice)
+        camara_click = e.control
+        camara_principal = panel_CamaraPrincipal
+
+        idx_principal = camara_principal.get_indice()
+        idx_click = camara_click.get_indice()
+
+        if idx_principal == idx_click:
+            return
+
+        print(f"Swap {idx_principal} <-> {idx_click}")
+
+        # 1️⃣ Cambiar cámara principal primero
+        camara_principal.setIndice(idx_click)
+
+        # ⏸️ pausa REAL para liberar driver
+        time.sleep(0.4)
+
+        # 2️⃣ Cambiar cámara secundaria
+        camara_click.setIndice(idx_principal)
         
         
 

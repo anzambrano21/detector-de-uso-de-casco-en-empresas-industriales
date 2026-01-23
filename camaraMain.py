@@ -104,18 +104,26 @@ class CamaraMain(ft.Container):
                 print(f"Error en cámara {self.indice}: {e}")
 
     def setIndice(self, nuevo_indice):
-        print('libra')
-        if hasattr(self, 'camara_logic'):
-            self.camara_logic.liberar() # Liberar antes de reasignar
+        # 1. Pausar lectura
+        self.stop_event.set()
+
+        # 2. Esperar al hilo
+        if self.thread.is_alive():
+            self.thread.join()
+
+        # 3. Actualizar índice
         self.indice = nuevo_indice
-        self.data = nuevo_indice # Actualizamos data para mantener consistencia
-        self.frame_count = 0  # Resetear contador
-        self.camara_logic = EscanerSeguridad(self.indice)  # Reiniciar la lógica de la cámara con el nuevo índice
-        # Reiniciar el hilo con la nueva cámara
+        self.data = nuevo_indice
+        self.frame_count = 0
+
+        # 4. Cambiar cámara de forma segura
+        self.camara_logic.cambiar_camara(nuevo_indice)
+
+        # 5. Reiniciar loop
         self.stop_event.clear()
-        self.is_running = True
         self.thread = threading.Thread(target=self.update_video, daemon=True)
         self.thread.start()
+   
 
     def liberar_recursos(self):
         self.stop_event.set()

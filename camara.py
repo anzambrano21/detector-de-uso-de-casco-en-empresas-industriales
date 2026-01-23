@@ -1,4 +1,6 @@
+import time
 import cv2
+import torch
 from ultralytics import YOLO
 import math
 import base64
@@ -7,7 +9,7 @@ MODELO_YOLO = YOLO(r'C:\Users\Angel\runs\detect\train4\weights\best.pt')
 class EscanerSeguridad:
     def __init__(self,indice):
         # Inicializar la cámara una sola vez al crear el objeto
-        self.__camara = cv2.VideoCapture(indice)
+        self.__camara = cv2.VideoCapture(indice,cv2.CAP_DSHOW)
         
         # Intentar cargar el modelo entrenado (best.pt), si no existe, usa el base (yolov8n.pt)
         # Nota: La ruta 'runs/detect/train/weights/best.pt' se crea tras ejecutar entrenar_modelo.py
@@ -49,7 +51,13 @@ class EscanerSeguridad:
             
             # Realizar la detección con YOLO
             # conf=0.5 descarta detecciones con menos del 50% de probabilidad
-            results = self.model(self.imagen, verbose=False, conf=0.5)
+            results = self.model.predict(
+                                            self.imagen,
+                                            conf=0.5,
+                                            imgsz=416,
+                                            device="cuda" if torch.cuda.is_available() else "cpu",
+                                            verbose=False
+                                        )
             
             # Iterar sobre los resultados para diferenciar etiquetas
            
@@ -85,3 +93,17 @@ class EscanerSeguridad:
         _, buffer = cv2.imencode('.jpg', frame)
         imagen_base64 = base64.b64encode(buffer).decode('utf-8')
         return imagen_base64
+    def cambiar_camara(self, nuevo_indice):
+        try:
+                if self.__camara.isOpened():
+                    self.__camara.release()
+
+                time.sleep(0.3)  # IMPORTANTE para drivers Windows
+
+                self.__camara = cv2.VideoCapture(nuevo_indice, cv2.CAP_DSHOW)
+
+                if not self.__camara.isOpened():
+                    print("⚠️ No se pudo abrir la cámara", nuevo_indice)
+
+        except Exception as e:
+                print("❌ ERROR CRÍTICO CÁMARA:", e)
