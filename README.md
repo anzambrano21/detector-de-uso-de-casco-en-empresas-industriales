@@ -36,7 +36,7 @@ Sigue estos pasos para probar el detector en tu computadora:
 
 1.  **Clonar el repositorio:**
     ```bash
-    git clone [https://github.com/tu-usuario/detector-casco-industrial.git](https://github.com/tu-usuario/detector-casco-industrial.git)
+    git clone https://github.com/anzambrano21/detector-de-uso-de-casco-en-empresas-industriales.git
     ```
 2.  **Ejecutar el programa:**
     ```bash
