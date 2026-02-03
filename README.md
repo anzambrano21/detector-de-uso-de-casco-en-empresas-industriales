@@ -21,7 +21,7 @@ El sistema analiza cada cuadro de video y toma decisiones basadas en la detecci�
 2.  ** FALTA DE CASCO (Alerta Roja):** Si se detecta a una persona sin el equipo de protección, **la imagen se torna roja** y se muestra una advertencia visual clara para el guardia de seguridad.
 
 
-## 🛠️ Tecnologías Utilizadas
+##  Tecnologías Utilizadas
 
 * **Lenguaje:** Python 3
 * **Visión por Computadora:** OpenCV
